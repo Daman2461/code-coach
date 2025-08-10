@@ -1,8 +1,8 @@
-# 🏆 CP Coach MCP - Competitive Programming Assistant
+# 🏆 Code Coach Mcode - Competitive Programming Assistant
 
-## 🎯 **What is CP Coach?**
+## 🎯 **What is Code Coach?**
 
-CP Coach is an intelligent MCP (Model Context Protocol) server that provides **personalized competitive programming coaching** through:
+Code Coach is an intelligent Mcode (Model Context Protocol) server that provides **personalized competitive programming coaching** through:
 
 - 🔥 **Intelligent Roasting** - Analyzes your real coding patterns and roasts you based on actual performance
 - 🎯 **Smart Recommendations** - Suggests problems based on your weaknesses and coding goals  
@@ -30,7 +30,7 @@ CP Coach is an intelligent MCP (Model Context Protocol) server that provides **p
 
 ### **1. Connect to Server**
 ```bash
-/mcp connect https://6735c03f4eb5.ngrok-free.app/mcp/ hackathon2025
+/mcode connect https://6735c03f4eb5.ngrok-free.app/mcode/ hackathon2025
 ```
 
 ### **2. Add Your Profile (Once)**
@@ -49,7 +49,7 @@ when is the next contest?
 
 ### **Requirements**
 ```bash
-pip install -r cp_requirements.txt
+pip install -r code_requirements.txt
 ```
 
 ### **Environment Variables**
@@ -60,7 +60,7 @@ PUCH_PHONE_NUMBER=918587852177
 
 ### **Run Server**
 ```bash
-python cp_coach_mcp.py
+python code_coach_mcode.py
 ```
 
 ## 🎮 **Available Tools**
@@ -107,7 +107,7 @@ python cp_coach_mcp.py
 - **Contest Prep**: Target rating-appropriate problems in weak areas  
 - **General Growth**: Balanced skill development across all topics
 
-## 🎯 **Why CP Coach Wins**
+## 🎯 **Why code Coach Wins**
 
 ### **Instant Entertainment Value**
 - Personalized roasts people will screenshot and share
@@ -131,7 +131,7 @@ python cp_coach_mcp.py
 
 ## 🏆 **Hackathon Impact**
 
-CP Coach solves real problems for the **competitive programming community**:
+code Coach solves real problems for the **competitive programming community**:
 
 - **Students** get personalized coaching and never miss contests
 - **Professionals** preparing for interviews get targeted practice
@@ -141,7 +141,7 @@ The combination of **entertainment** (roasting) and **utility** (recommendations
 
 ## 📊 **Technical Architecture**
 
-- **Framework**: FastMCP (official MCP Python SDK)
+- **Framework**: FastMcode (official Mcode Python SDK)
 - **Transport**: Streamable HTTP on port 8085
 - **APIs**: Codeforces, AtCoder, LeetCode (estimated), CodeChef (estimated)
 - **Memory**: In-memory chat session storage
@@ -150,6 +150,6 @@ The combination of **entertainment** (roasting) and **utility** (recommendations
 
 ## 🎉 **Ready for Users**
 
-CP Coach MCP is **production-ready** and provides immediate value to anyone in the competitive programming community. The combination of intelligent analysis, entertainment value, and practical utility makes it a standout hackathon submission.
+code Coach Mcode is **production-ready** and provides immediate value to anyone in the competitive programming community. The combination of intelligent analysis, entertainment value, and practical utility makes it a standout hackathon submission.
 
 **Try it now and get roasted based on your actual coding skills!** 🔥
