@@ -440,136 +440,271 @@ def generate_intelligent_roast(profiles: List[Dict[str, Any]]) -> str:
     return roast_text
 
 def generate_intelligent_recommendations(profiles: List[Dict[str, Any]], goal: str = "general") -> str:
-    """Generate intelligent, contextual recommendations based on actual coding patterns and weaknesses"""
+    """Generate truly intelligent, personalized recommendations based on actual coding patterns, company needs, and solved problems"""
     if not profiles or all("error" in p for p in profiles):
         return "❌ **No valid profiles found!** Add your coding handles first."
+    
+    # Parse company from goal
+    company = ""
+    goal_lower = goal.lower()
+    companies = ["google", "meta", "facebook", "amazon", "microsoft", "apple", "netflix", "uber", "airbnb", "twitter", "linkedin", "salesforce"]
+    for comp in companies:
+        if comp in goal_lower:
+            company = comp
+            goal = goal_lower.replace(comp, "").strip()
+            break
     
     # Analyze user's comprehensive coding profile
     max_rating = 0
     total_problems = 0
     platform_data = {}
-    weak_areas = []
-    strong_areas = []
-    overall_patterns = {
-        "avg_accuracy": 0,
-        "recent_activity": 0,
-        "difficulty_comfort": 0,
-        "topic_diversity": 0
-    }
+    favorite_topics = []
+    weak_topics = []
+    accuracy_issues = []
+    recent_patterns = []
     
     for profile in profiles:
         if "error" not in profile:
+            platform = profile.get("platform", "unknown")
+            handle = profile.get("handle", "N/A")
             rating = profile.get("rating", 0)
             problems = profile.get("problemsSolved", 0)
-            avg_difficulty = profile.get("avgDifficulty", 0)
-            top_tags = profile.get("topTags", [])
             accuracy = profile.get("accuracyRate", 0)
-            recent_activity = profile.get("recentActivity", 0)
+            avg_difficulty = profile.get("avgDifficulty", 0)
+            topics = profile.get("favoriteTopics", [])
+            recent_activity = profile.get("recentActivity", False)
             
             if rating > max_rating:
                 max_rating = rating
             total_problems += problems
-            platform_data[profile.get("platform", "unknown")] = profile
+            platform_data[platform] = profile
             
-            # Analyze patterns for intelligent recommendations
-            overall_patterns["avg_accuracy"] += accuracy
-            overall_patterns["recent_activity"] += recent_activity
+            # Analyze favorite topics
+            favorite_topics.extend(topics[:3])
             
-            # Identify weak areas based on performance gaps
+            # Identify specific weaknesses
+            if accuracy < 40:
+                accuracy_issues.append(f"Very low accuracy on {platform} ({accuracy}%) - focus on testing and debugging")
+            elif accuracy < 65:
+                accuracy_issues.append(f"Moderate accuracy on {platform} ({accuracy}%) - improve problem analysis")
+            
+            # Analyze difficulty comfort zone
             if rating > 0 and avg_difficulty > 0:
-                if avg_difficulty < rating - 300:
-                    weak_areas.append("Comfort zone addiction - avoiding challenging problems")
-                elif avg_difficulty > rating + 200:
-                    weak_areas.append("Overambition - attempting problems too difficult")
-                    
-            if accuracy < 30:
-                weak_areas.append("Low accuracy - poor debugging/testing skills")
-            elif accuracy < 50:
-                weak_areas.append("Moderate accuracy - needs better problem analysis")
-                
-            if recent_activity < 5:
-                weak_areas.append("Inconsistent practice - low recent activity")
-                
-            # Analyze topic diversity
-            if len(top_tags) < 3:
-                weak_areas.append("Limited topic diversity - too specialized")
-            elif len(top_tags) >= 5:
-                strong_areas.append("Good topic diversity")
-                
-            # Analyze favorite topics for targeted recommendations
-            for tag, count in top_tags[:3]:
-                if tag in ["implementation", "brute force"]:
-                    weak_areas.append(f"Over-reliance on {tag} - needs algorithmic depth")
-                elif tag in ["dp", "graphs", "math"]:
-                    strong_areas.append(f"Strong in {tag}")
+                if avg_difficulty < rating - 200:
+                    weak_topics.append(f"Playing too safe on {platform} - attempt harder problems")
+                elif avg_difficulty > rating + 300:
+                    weak_topics.append(f"Overreaching on {platform} - build fundamentals first")
+            
+            # Recent activity analysis
+            if not recent_activity:
+                recent_patterns.append(f"No recent activity on {platform} - consistency needed")
     
-    # Calculate averages
-    num_profiles = len([p for p in profiles if "error" not in p])
-    if num_profiles > 0:
-        overall_patterns["avg_accuracy"] /= num_profiles
-        overall_patterns["recent_activity"] /= num_profiles
-    
-    # Classify skill level
+    # Determine skill level and appropriate difficulty
     if max_rating == 0:
         level = "Beginner"
-        difficulty_range = "800-1000"
+        cf_range = "800-1000"
+        lc_difficulty = "Easy"
     elif max_rating < 1200:
         level = "Newbie"
-        difficulty_range = "800-1200"
+        cf_range = "800-1200"
+        lc_difficulty = "Easy to Medium"
     elif max_rating < 1600:
         level = "Pupil/Specialist"
-        difficulty_range = "1000-1400"
+        cf_range = "1000-1400"
+        lc_difficulty = "Medium"
     elif max_rating < 1900:
         level = "Expert"
-        difficulty_range = "1200-1600"
+        cf_range = "1200-1700"
+        lc_difficulty = "Medium to Hard"
     else:
         level = "Master+"
-        difficulty_range = "1400-2000+"
+        cf_range = "1400-2000+"
+        lc_difficulty = "Hard"
     
-    recommendations = f"🎯 **Problem Recommendations for {level} Level**\n\n"
-    recommendations += f"📊 **Your Stats Summary:**\n"
+    # Start building intelligent recommendations
+    title = f"🎯 **Personalized Recommendations"
+    if company:
+        title += f" for {company.title()}"
+    if goal and goal != "general":
+        title += f" ({goal.title()})"
+    title += f" - {level} Level**\n\n"
     
+    recommendations = title
+    
+    # Profile summary with insights
+    recommendations += "📊 **Your Coding Profile Analysis:**\n"
     for platform, data in platform_data.items():
-        recommendations += f"- **{platform}**: {data.get('handle', 'N/A')} (Rating: {data.get('rating', 0)}, Solved: {data.get('problemsSolved', 0)})\n"
-    
-    recommendations += f"\n🎲 **Recommended Difficulty Range:** {difficulty_range}\n\n"
-    
-    # Goal-specific recommendations
-    if goal.lower() in ["interview", "job", "faang"]:
-        recommendations += "💼 **Interview Prep Focus:**\n"
-        recommendations += "1. **Arrays & Strings** - Two Sum, Valid Parentheses, Longest Substring\n"
-        recommendations += "2. **Linked Lists** - Reverse Linked List, Merge Two Lists\n"
-        recommendations += "3. **Trees & Graphs** - Binary Tree Traversal, BFS/DFS\n"
-        recommendations += "4. **Dynamic Programming** - Climbing Stairs, Coin Change\n"
-        recommendations += "5. **System Design** - Start with basic concepts\n"
+        handle = data.get('handle', 'N/A')
+        rating = data.get('rating', 0)
+        solved = data.get('problemsSolved', 0)
+        accuracy = data.get('accuracyRate', 0)
+        topics = data.get('favoriteTopics', [])
         
-    elif goal.lower() in ["contest", "competitive", "cp"]:
-        recommendations += "🏆 **Contest Performance Focus:**\n"
-        recommendations += "1. **Math & Number Theory** - GCD, Prime Numbers, Modular Arithmetic\n"
-        recommendations += "2. **Data Structures** - Segment Trees, Fenwick Trees\n"
-        recommendations += "3. **Graph Algorithms** - Dijkstra, Floyd-Warshall, MST\n"
-        recommendations += "4. **Dynamic Programming** - Classic DP patterns\n"
-        recommendations += "5. **Greedy Algorithms** - Activity Selection, Huffman Coding\n"
+        recommendations += f"• **{platform.title()}** ({handle}): {rating} rating, {solved} solved, {accuracy}% accuracy\n"
+        if topics:
+            recommendations += f"  → Strong in: {', '.join(topics[:3])}\n"
+    
+    recommendations += "\n"
+    
+    # Company-specific intelligent recommendations
+    if company:
+        recommendations += f"🏢 **{company.title()}-Specific Strategy:**\n"
         
-    else:
-        recommendations += "📚 **General Skill Building:**\n"
-        recommendations += "1. **Start with Easy Problems** - Build confidence first\n"
-        recommendations += "2. **Focus on One Topic** - Master before moving on\n"
-        recommendations += "3. **Practice Daily** - Consistency beats intensity\n"
-        recommendations += "4. **Read Editorials** - Learn from solutions\n"
-        recommendations += "5. **Join Contests** - Real-time problem solving\n"
+        if company in ["google", "alphabet"]:
+            recommendations += "• **Google's Focus**: System design, scalability, algorithmic thinking\n"
+            recommendations += "• **Key Topics**: Graphs, Trees, Dynamic Programming, System Design\n"
+            recommendations += "• **Specific Problems**: \n"
+            recommendations += "  - Word Ladder (BFS/Graph traversal - Google loves this pattern)\n"
+            recommendations += "  - Design Search Autocomplete (System design component)\n"
+            recommendations += "  - Maximum Subarray (Classic DP - tests optimization thinking)\n"
+            
+            if "graphs" not in [t.lower() for t in favorite_topics]:
+                recommendations += "• **CRITICAL**: You haven't mastered graphs yet - Google heavily tests graph algorithms!\n"
+                recommendations += "  → Start with: Number of Islands, Clone Graph, Course Schedule\n"
+            
+            if max_rating < 1400:
+                recommendations += "• **Rating Gap**: Google typically expects 1400+ CF rating equivalent\n"
+                recommendations += "  → Focus on medium CF problems (1200-1400 range)\n"
+                
+        elif company in ["meta", "facebook"]:
+            recommendations += "• **Meta's Focus**: Product thinking, user-centric solutions, clean code\n"
+            recommendations += "• **Key Topics**: Arrays, Strings, Hash Tables, Trees, System Design\n"
+            recommendations += "• **Specific Problems**:\n"
+            recommendations += "  - Valid Parentheses (String manipulation - Meta classic)\n"
+            recommendations += "  - Binary Tree Right Side View (Tree traversal with twist)\n"
+            recommendations += "  - Design News Feed (System design for social media)\n"
+            
+            if any("low accuracy" in issue for issue in accuracy_issues):
+                recommendations += "• **CRITICAL**: Meta values bug-free code - improve your accuracy first!\n"
+                recommendations += "  → Practice easier problems until 80%+ accuracy\n"
+                
+        elif company == "amazon":
+            recommendations += "• **Amazon's Focus**: Leadership principles, scalable solutions, optimization\n"
+            recommendations += "• **Key Topics**: Arrays, Strings, Trees, System Design, Optimization\n"
+            recommendations += "• **Specific Problems**:\n"
+            recommendations += "  - Two Sum (Classic - but explain multiple approaches)\n"
+            recommendations += "  - Merge k Sorted Lists (Optimization and heap usage)\n"
+            recommendations += "  - Design Amazon's Recommendation System\n"
+            
+            if avg_difficulty < max_rating - 100:
+                recommendations += "• **Challenge Yourself**: Amazon tests problem-solving depth\n"
+                recommendations += "  → Attempt problems 100-200 points above your rating\n"
+                
+        elif company == "microsoft":
+            recommendations += "• **Microsoft's Focus**: Clean code, debugging skills, practical solutions\n"
+            recommendations += "• **Key Topics**: Strings, Arrays, Linked Lists, Trees, System Design\n"
+            recommendations += "• **Specific Problems**:\n"
+            recommendations += "  - Reverse Words in a String (String manipulation)\n"
+            recommendations += "  - Serialize and Deserialize Binary Tree (Complex tree operations)\n"
+            recommendations += "  - Design Microsoft Teams Chat System\n"
+            
+        recommendations += "\n"
     
-    recommendations += f"\n🔗 **Recommended Platforms:**\n"
-    recommendations += f"- **Codeforces**: Div 2 problems ({difficulty_range})\n"
-    recommendations += f"- **LeetCode**: Medium problems for interviews\n"
-    recommendations += f"- **AtCoder**: Beginner Contest problems\n"
-    recommendations += f"- **CodeChef**: Long Challenge problems\n"
+    # Goal-specific recommendations with personal insights
+    if goal in ["interview", "job"] or company:
+        recommendations += "💼 **Interview Preparation Strategy:**\n"
+        
+        # Personalized based on their current level
+        if max_rating < 1000:
+            recommendations += "• **Phase 1 (4-6 weeks)**: Master fundamentals\n"
+            recommendations += "  → Arrays: Two Sum, Best Time to Buy Stock, Contains Duplicate\n"
+            recommendations += "  → Strings: Valid Anagram, Valid Parentheses, Longest Common Prefix\n"
+            recommendations += "  → Basic Math: Palindrome Number, Reverse Integer\n"
+            
+        elif max_rating < 1400:
+            recommendations += "• **Phase 2 (6-8 weeks)**: Intermediate patterns\n"
+            recommendations += "  → Two Pointers: Container With Most Water, 3Sum\n"
+            recommendations += "  → Sliding Window: Longest Substring Without Repeating Characters\n"
+            recommendations += "  → Trees: Maximum Depth, Same Tree, Invert Binary Tree\n"
+            
+        else:
+            recommendations += "• **Advanced Phase (8-10 weeks)**: Complex algorithms\n"
+            recommendations += "  → Advanced DP: Edit Distance, Longest Increasing Subsequence\n"
+            recommendations += "  → Graph Algorithms: Word Ladder, Course Schedule II\n"
+            recommendations += "  → System Design: Design Twitter, Design URL Shortener\n"
+        
+        # Address their specific weaknesses
+        if accuracy_issues:
+            recommendations += f"• **Accuracy Improvement Plan**:\n"
+            for issue in accuracy_issues[:2]:
+                recommendations += f"  → {issue}\n"
+            recommendations += "  → Practice: Solve 5 easy problems daily for 1 week\n"
+        
+        # Topic-specific recommendations based on their gaps
+        missing_topics = []
+        essential_topics = ["arrays", "strings", "trees", "graphs", "dp"]
+        for topic in essential_topics:
+            if not any(topic in fav.lower() for fav in favorite_topics):
+                missing_topics.append(topic)
+        
+        if missing_topics:
+            recommendations += f"• **Missing Essential Topics**: {', '.join(missing_topics)}\n"
+            for topic in missing_topics[:2]:
+                if topic == "dp":
+                    recommendations += "  → DP: Start with Fibonacci → Climbing Stairs → House Robber\n"
+                elif topic == "graphs":
+                    recommendations += "  → Graphs: Number of Islands → Clone Graph → Course Schedule\n"
+                elif topic == "trees":
+                    recommendations += "  → Trees: Maximum Depth → Same Tree → Binary Tree Paths\n"
+        
+    elif goal in ["contest", "competitive", "cp"]:
+        recommendations += "🏆 **Contest Performance Strategy:**\n"
+        
+        if max_rating < 1200:
+            recommendations += "• **Target**: Consistently solve Div3 A, B problems\n"
+            recommendations += "• **Practice Schedule**: \n"
+            recommendations += "  → Week 1-2: Last 10 Div3 contests, problems A-B only\n"
+            recommendations += "  → Week 3-4: Attempt C problems, time limit 45 mins\n"
+            recommendations += "• **Speed Goals**: A in <10 mins, B in <20 mins\n"
+            
+        elif max_rating < 1600:
+            recommendations += "• **Target**: Solve Div2 A, B, C consistently\n"
+            recommendations += "• **Focus Areas**: Greedy algorithms, basic number theory\n"
+            recommendations += "• **Specific Practice**:\n"
+            recommendations += "  → Greedy: Activity Selection, Fractional Knapsack\n"
+            recommendations += "  → Number Theory: GCD problems, Prime factorization\n"
+            
+        else:
+            recommendations += "• **Target**: Solve Div2 A-D, attempt E\n"
+            recommendations += "• **Advanced Topics**: Segment trees, advanced DP, graph theory\n"
+            recommendations += "• **Contest Strategy**: Fast A-C, then deep focus on D-E\n"
     
-    recommendations += f"\n💡 **Pro Tips:**\n"
-    recommendations += f"- Solve 2-3 problems daily consistently\n"
-    recommendations += f"- Time yourself during practice\n"
-    recommendations += f"- Implement solutions from scratch\n"
-    recommendations += f"- Join coding communities for motivation\n"
+    # Specific problem recommendations based on their solved history
+    recommendations += "\n🎯 **Specific Problems Tailored for You:**\n"
+    
+    # Based on their strong areas, recommend next level
+    if "implementation" in [t.lower() for t in favorite_topics]:
+        recommendations += "• **Implementation** (your strength): Try 'Spiral Matrix', 'Rotate Image'\n"
+    if "math" in [t.lower() for t in favorite_topics]:
+        recommendations += "• **Math** (your strength): Try 'Happy Number', 'Ugly Number II'\n"
+    if "greedy" in [t.lower() for t in favorite_topics]:
+        recommendations += "• **Greedy** (your strength): Try 'Jump Game II', 'Gas Station'\n"
+    
+    # Address weak areas with specific problems
+    if weak_topics:
+        recommendations += "• **Weak Areas to Address**:\n"
+        for weak in weak_topics[:2]:
+            recommendations += f"  → {weak}\n"
+    
+    # Recent activity recommendations
+    if recent_patterns:
+        recommendations += "\n⚠️ **Activity Concerns**:\n"
+        for pattern in recent_patterns[:2]:
+            recommendations += f"• {pattern}\n"
+        recommendations += "• **Comeback Plan**: Start with 1 easy problem daily for motivation\n"
+    
+    # Actionable 30-day plan
+    recommendations += "\n📅 **Your Personalized 30-Day Action Plan:**\n"
+    recommendations += "**Week 1**: Address accuracy issues + practice weak topics\n"
+    recommendations += "**Week 2**: Focus on company-specific problem patterns\n"
+    recommendations += "**Week 3**: Mock interviews + timed problem solving\n"
+    recommendations += "**Week 4**: Advanced topics + system design basics\n"
+    
+    recommendations += "\n💡 **Success Metrics to Track:**\n"
+    recommendations += f"• Maintain {max(70, int(max(p.get('accuracyRate', 0) for p in profiles if 'error' not in p) + 10))}%+ accuracy\n"
+    recommendations += f"• Solve problems in {cf_range} difficulty range\n"
+    recommendations += "• Complete at least 3 problems daily\n"
+    recommendations += "• Participate in 2+ contests weekly\n"
     
     return recommendations
 
@@ -742,7 +877,7 @@ RecommendDescription = RichToolDescription(
 
 @mcp.tool(description=RecommendDescription.model_dump_json())
 async def recommend_problems(
-    goal: Annotated[str, Field(default="general", description="Your goal: 'interview', 'contest', or 'general'")] = "general",
+    goal: Annotated[str, Field(default="general", description="Your goal: 'interview google', 'contest', 'interview meta', 'general', etc. Can include company names like google, meta, amazon, microsoft")] = "general",
     handles: Annotated[str, Field(description="Optional: Comma-separated list of handles in format 'platform:handle' (e.g., 'codeforces:tourist,leetcode:john_doe'). If not provided, uses previously stored handles.")] = ""
 ) -> list[TextContent]:
     """
