@@ -1,13 +1,13 @@
-# 🏆 Code Coach Mcode - Competitive Programming Assistant
+#  Code Coach Mcode - Competitive Programming Assistant MCP Server
 
-## 🎯 **What is Code Coach?**
+##  **What is Code Coach?**
 
 Code Coach is an intelligent Mcode (Model Context Protocol) server that provides **personalized competitive programming coaching** through:
 
-- 🔥 **Intelligent Roasting** - Analyzes your real coding patterns and roasts you based on actual performance
-- 🎯 **Smart Recommendations** - Suggests problems based on your weaknesses and coding goals  
-- 🏆 **Live Contest Tracking** - Shows upcoming contests across all major platforms
-- 💾 **Chat Memory** - Remembers your handles across the conversation
+-  **Intelligent Roasting** - Analyzes your real coding patterns and roasts you based on actual performance
+-  **Smart Recommendations** - Suggests problems based on your weaknesses and coding goals  
+-  **Live Contest Tracking** - Shows upcoming contests across all major platforms
+-  **Chat Memory** - Remembers your handles across the conversation
 
 ## ⚡ **Key Features**
 
@@ -30,7 +30,7 @@ Code Coach is an intelligent Mcode (Model Context Protocol) server that provides
 
 ### **1. Connect to Server**
 ```bash
-/mcp connect https://6735c03f4eb5.ngrok-free.app/mcode/ hackathon2025
+/mcp connect https://6735c03f4eb5.ngrok-free.app/mcode/hackathon2025
 ```
 
 ### **2. Add Your Profile (Once)**
