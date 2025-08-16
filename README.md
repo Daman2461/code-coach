@@ -30,7 +30,7 @@ Code Coach is an intelligent Mcode (Model Context Protocol) server that provides
 
 ### **1. Connect to Server**
 ```bash
-/mcp connect https://6735c03f4eb5.ngrok-free.app/mcode/hackathon2025
+/mcp connect https://6735c03f4eb5.ngrok-free.app/mcode/ hackathon2025
 ```
 
 ### **2. Add Your Profile (Once)**
