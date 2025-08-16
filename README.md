@@ -1,4 +1,4 @@
-#  Code Coach Mcode - Competitive Programming Assistant MCP Server
+#  Code Coach - Competitive Programming Assistant MCP Server
 
 ##  **What is Code Coach?**
 
